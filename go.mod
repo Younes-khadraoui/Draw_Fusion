@@ -4,6 +4,7 @@ go 1.22.5
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
+	github.com/gorilla/websocket v1.5.3
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/labstack/gommon v0.4.2
 )

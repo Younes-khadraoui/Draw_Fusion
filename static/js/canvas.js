@@ -1,3 +1,5 @@
+import { initializeWebSocket, sendDrawingData } from "./websocket.js";
+
 window.addEventListener("load", () => {
   const currentTheme = new URLSearchParams(window.location.search).get("theme");
 
@@ -11,11 +13,18 @@ window.addEventListener("load", () => {
     document.querySelector("svg").style.filter = "invert(0)";
   }
 
+  initializeWebSocket();
+
   resize();
   document.addEventListener("mousedown", startPainting);
   document.addEventListener("mouseup", stopPainting);
   document.addEventListener("mousemove", sketch);
   window.addEventListener("resize", resize);
+
+  document.addEventListener("receiveDrawingData", (e) => {
+    const { prevX, prevY, x, y } = e.detail;
+    drawLine(prevX, prevY, x, y);
+  });
 });
 
 const canvas = document.querySelector("#canvas");
@@ -45,28 +54,32 @@ function stopPainting() {
 
 function sketch(event) {
   if (!paint) return;
+  
+  const prevX = coord.x;
+  const prevY = coord.y;
+
   ctx.beginPath();
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
   ctx.strokeStyle = "black";
-  ctx.moveTo(coord.x, coord.y);
+  ctx.moveTo(prevX, prevY);
+
   getPosition(event);
-  ctx.lineTo(coord.x, coord.y);
+
+  const x = coord.x;
+  const y = coord.y;
+  ctx.lineTo(x, y);
   ctx.stroke();
+
+  sendDrawingData(prevX, prevY, x, y);
 }
 
-function changeTheme() {
-  const currentTheme = new URLSearchParams(window.location.search).get("theme");
-
-  if (currentTheme === "dark") {
-    history.pushState({}, "", window.location.pathname);
-    document.documentElement.classList.remove("dark");
-    document.getElementById("canvas").style.filter = "invert(0)";
-    document.querySelector("svg").style.filter = "invert(0)";
-  } else {
-    history.pushState({}, "", `${window.location.pathname}?theme=dark`);
-    document.documentElement.classList.add("dark");
-    document.getElementById("canvas").style.filter = "invert(1)";
-    document.querySelector("svg").style.filter = "invert(1)";
-  }
+function drawLine(prevX, prevY, x, y) {
+  ctx.beginPath();
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "black";
+  ctx.moveTo(prevX, prevY);
+  ctx.lineTo(x, y);
+  ctx.stroke();
 }

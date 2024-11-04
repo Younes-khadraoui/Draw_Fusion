@@ -45,13 +45,12 @@ func main() {
 			return echo.NewHTTPError(404, "File not found")
 		}
 
-		// Set content type based on file extension
 		contentType := "text/plain"
 		if strings.HasSuffix(path, ".css") {
 			contentType = "text/css"
 		} else if strings.HasSuffix(path, ".js") {
 			contentType = "application/javascript"
-		} else if strings.HasSuffix(path, ".svg") { // Set SVG content type here
+		} else if strings.HasSuffix(path, ".svg") { 
 			contentType = "image/svg+xml"
 		} else if strings.HasSuffix(path, ".png") {
 			contentType = "image/png"
@@ -63,6 +62,8 @@ func main() {
 	})
 
 	server.GET("/", handlers.HandleHomePage)
+
+	server.GET("/ws", handlers.HandleWebsocket)
 
 	if err := server.Start(":8080"); err != nil {
 		server.Logger.Fatal(err)

@@ -16,5 +16,23 @@
   </div>
   <canvas class="active:cursor-pointer bg-white dark:bg-white" id="canvas"></canvas> 
   
-  <script src="/static/js/canvas.js"></script> 
+  <script src="/static/js/websocket.js" type="module"></script>
+  <script src="/static/js/canvas.js" type="module"></script>
+  <script>
+    function changeTheme() {
+      const currentTheme = new URLSearchParams(window.location.search).get("theme");
+
+      if (currentTheme === "dark") {
+        history.pushState({}, "", window.location.pathname);
+        document.documentElement.classList.remove("dark");
+        document.getElementById("canvas").style.filter = "invert(0)";
+        document.querySelector("svg").style.filter = "invert(0)";
+      } else {
+        history.pushState({}, "", `${window.location.pathname}?theme=dark`);
+        document.documentElement.classList.add("dark");
+        document.getElementById("canvas").style.filter = "invert(1)";
+        document.querySelector("svg").style.filter = "invert(1)";
+      }
+    }
+  </script>
 {{end}}
